@@ -4,11 +4,11 @@ Outlook calendar cho phép bạn quản lý email và danh bạ, tìm thông tin
 ## Luồng Authentication
 
 *Bước 1. Nhận ủy quyền*
-![alt](../image/Picture.png)
+![alt](https://github.com/norealy/CalendarOutlook/blob/master/image/picture1.png)
 *Bước 2. Nhận Access token*
-![alt](../image/Picture.png)
+![alt](https://github.com/norealy/CalendarOutlook/blob/master/image/Picture2.png)
 *Bước 3. Gọi Microsoft Graph bằng accessToken*
-![alt](../image/Picture.png)
+![alt](https://github.com/norealy/CalendarOutlook/blob/master/image/Picture3.png)
 ## Thực hiện tạo lịch với outlook calendars
 1. **Đăng ký ứng dụng với Azure AD**
 - Truy cập [Azure portal](https://portal.azure.com/)
@@ -43,6 +43,7 @@ const data = {
 };
 ```
 Sau khi gửi form-data thành công thì ta nhận được Access Token và một số thông tin nằm trong data gửi về.
+
 **Bước 4.** Có được Access token ta thực hiện gọi đến Microsoft Graph bằng accessToken Bằng cách
 ```
 method: GET.
