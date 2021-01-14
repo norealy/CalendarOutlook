@@ -5,10 +5,13 @@ Outlook calendar cho phép bạn quản lý email và danh bạ, tìm thông tin
 
 *Bước 1. Nhận ủy quyền*
 ![alt](https://github.com/norealy/CalendarOutlook/blob/master/image/picture1.png)
+
 *Bước 2. Nhận Access token*
 ![alt](https://github.com/norealy/CalendarOutlook/blob/master/image/Picture2.png)
+
 *Bước 3. Gọi Microsoft Graph bằng accessToken*
 ![alt](https://github.com/norealy/CalendarOutlook/blob/master/image/Picture3.png)
+
 ## Thực hiện tạo lịch với outlook calendars
 1. **Đăng ký ứng dụng với Azure AD**
 - Truy cập [Azure portal](https://portal.azure.com/)
