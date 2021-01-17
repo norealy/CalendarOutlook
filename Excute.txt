@@ -77,6 +77,7 @@ const options2 = {
     */
 };
 /* ******************Delete Event******************** */
+const eventID = "AQMkADAwATM3ZmYAZS0wMmIxLTczMwA3LTAwAi0wMAoARgAAA6ff2qnCPwlNlq5XDoFJyvIHAEYg0JrBN7BGju758rMnI5gAAAIBDQAAAEYg0JrBN7BGju758rMnI5gAA-q1JGMAAAA=";
 
 const options2 = {
     method: 'DELETE',
@@ -166,9 +167,6 @@ const options2 = {
 /* *******************Delete Calendar group******************* */
 const groupID = "AQMkADAwATM3ZmYAZS0wMmIxLTczMwA3LTAwAi0wMAoARgAAA6ff2qnCPwlNlq5XDoFJyvIHAEYg0JrBN7BGju758rMnI5gAAAIBBgAAAEYg0JrBN7BGju758rMnI5gAA-q1O8gAAAA=";
 
-const data = {
-    "name": "Edit group"
-}
 const options2 = {
     method: 'DELETE',
     headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${accessTokenAzure}` },
@@ -176,9 +174,8 @@ const options2 = {
     url: `https://graph.microsoft.com/v1.0/me/calendarGroups/${groupID}`,
 };
 
-DELETE /me/calendars/{id}
-DELETE /me/calendarGroup/calendars/{id}
-DELETE /me/calendarGroups/{id}/calendars/{id}
+DELETE /me/calendarGroups/{id}
+DELETE /users/{id | userPrincipalName}/calendarGroups/{id}
 /* ********************************* NOTIFICATION ******************* *************/
 
 let data3 = {
@@ -186,7 +183,7 @@ let data3 = {
     "notificationUrl": "https://keyvaultoutlookcalendar.vault.azure.net/secrets/nrx2?tenantId=xdatgdgmail.onmicrosoft.com",
     "resource": "/me/events",
     "expirationDateTime": "2022-09-19T20:00:00",
-    "clientState": "Nguyenvandat1998@"
+    "clientState": clientState
 }
 const options3 = {
     method: 'POST',

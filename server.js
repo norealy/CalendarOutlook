@@ -67,7 +67,8 @@ app.post('/code', async (req, res) => {
 		const accessTokenAzure = result.data.access_token;
 		console.log(accessTokenAzure)
 		
-		console.log(result3);
+		
+
 		return res.send("");
 	} catch (e) {
 		console.log(e)

@@ -4,24 +4,25 @@ Outlook calendar cho phép bạn quản lý email và danh bạ, tìm thông tin
 ## Cách thực hiện Authentication
 
 *Bước 1. Nhận ủy quyền*
-![alt](https://github.com/norealy/CalendarOutlook/blob/master/image/picture1.png)
+![alt](./image/picture1.png)
 
 *Bước 2. Nhận Access token*
-![alt](https://github.com/norealy/CalendarOutlook/blob/master/image/Picture2.png)
+![alt](./image/Picture2.png)
 
 *Bước 3. Gọi Microsoft Graph bằng accessToken*
-![alt](https://github.com/norealy/CalendarOutlook/blob/master/image/Picture3.png)
+![alt](./image/Picture3.png)
 
-## Thực hiện tạo lịch với outlook calendars
-1. **Đăng ký ứng dụng với Azure AD**
-- Truy cập [Azure portal](https://portal.azure.com/)
+## Outlook calendars
+#### **Đăng ký ứng dụng với Azure AD**
+- > Truy cập [Azure portal](https://portal.azure.com/)
 - >App registrations > New registration
 - >Link redirect > save
 - >Certificates & secrets > New client secret
-2. **Thực hiện authentication**
+- >API Permisstion > calendars.readwrite, calendars.read
+#### **Thực hiện authentication**
  Sau khi tạo tài khoản Azure ta cần một số thông tin như sau : `AZURE_SECRET`, `AZURE_ID`, `AZURE_REDIRECT`, `AZURE_STATE`.
 
-- Client yêu cầu đăng nhập vs microsoft. Server thực hiện redirect đến máy chủ ủy quyền của microfsoft.
+**Bước 1** : Client yêu cầu đăng nhập vs microsoft. Server thực hiện redirect đến máy chủ ủy quyền của microfsoft.
 ```
 const urlRequestAuthor = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?
     client_id=${azureIdAzure}&
@@ -33,107 +34,95 @@ const urlRequestAuthor = `https://login.microsoftonline.com/common/oauth2/v2.0/a
 return res.status(301).redirect(urlRequestAuthor)
 ```
  Trong đó có 1 số options sau
- ![]
+ ![Alt](./image/optionAuthor1.png)
+- Sau đó client nhận lại được `CODE` nằm trong url. Có dạng :
+`http://<domain>/<urlRedirect>?code=M.R3_BAY.b7705625-1585-a246-6c1b-4e4a04c424a1&state=QVpVUkUtUkFO...`
 
-**Bước 1.** Thực hiện phượng thức GET đến `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${azureIdAzure}&response_type=code&redirect_uri=${redirectUrlAzure}&response_mode=query&scope=${scopeAzure}&state=${stateAzure}`;
--  Trong đó 
-`azureIdAzure` là Client ID của app khi tạo tài khoản Azure.
-`response_type` là "code" để nhận được code gửi về.
-`redirectUrlAzure` là redirect đăng ký trên Azure.
-`scopeAzure` là quyền thực thi app trên tài khoản sử dụng app (Ở đây dùng đến Outlook calendar lên sẽ để là `calendars.readwrite` )
-`stateAzure` là một dạng `key` của app và máy chủ ủy quyền tương tác xác thực.
+**Bước 2**: Client thực hiện POST Code cùng gửi lên server 2 để nhận code và xử lý.
 
-_Sau khi thực hiện chuyển hướng đến máy chủ ủy quyền ta nhận được `code` trên link url `AZURE_REDIRECT`_
 
-**Bước 2.** Sau khi có được `Code` ta thực hiện POST code sang máy chủ khác và xử lý.
+```
+// _Server 1 thuc hien POST "code" lên Server2_
+  const code = req.query.code;
+	console.log("Code :", code)
+	const uri = "http://localhost:4000/code";
+	const data = {
+		code: code
+	};
+	const options1 = {
+		method: 'POST',
+		headers: { 'content-type': 'application/json' },
+		data: JSON.stringify(data),
+		url: uri,
+	};
+```
+```
+// _Server 2 nhận "code" để lấy Access token
 
-**Bước 3.** Thực hiện POST một form-post đến `URL https://login.microsoftonline.com/common/oauth2/v2.0/token` với nội dung data như sau :
-```	
+  const code = req.body.code;
+	const urlGetToken = "https://login.microsoftonline.com/common/oauth2/v2.0/token";
+	let data = {
+		client_id: AZURE_ID,
+		scope: scopeAzure,
+		code: code,
+		redirect_uri: AZURE_REDIRECT,
+		grant_type: "authorization_code",
+		client_secret: AZURE_SECRET,
+		response_mode: "form_post"
+	};
+	const options = {
+		method: 'POST',
+		headers: { 'content-type': 'application/x-www-form-urlencoded' },
+		data: qs.stringify(data),
+		url: urlGetToken,
+	};
+	const result = await axios(options);
+	const accessTokenAzure = result.data.access_token;
+
+```
+#### Có được Access token ta thực hiện gọi đến Microsoft Graph bằng accessToken
+
+1. **Get data Calendar_Groups, Calendars and Events**
+    - method: `GET`
+    - headers: `{ Authorization : Bearer ${accessTokenAzure} }`
+    - URL:
+    -  - Get all calendarGroups : _https://graph.microsoft.com/v1.0/me/calendarGroups_
+
+    -  - Get all calendars : _https://graph.microsoft.com/v1.0/me/calendars_
+
+    -  - Get all events : _https://graph.microsoft.com/v1.0/me/events_
+
+    -  - Get all calendar by users :  _https://graph.microsoft.com/v1.0/users/outlook...@outlook.com/calendars_
+
+    - - Get calendar by id: _https://graph.microsoft.com/v1.0/me/calendars/${idCalendar}_
+
+    - - Get event by id: _https://graph.microsoft.com/v1.0/me/events/{idEvent}_
+
+    - - Get events in calendarID: _https://graph.microsoft.com/v1.0/me/calendars/{idCalendar}/events_
+  
+    - - Get calendar account share: _https://graph.microsoft.com/v1.0/users/{userPrincipalNameAccount}/calendar_
+    
+    - - Get event by id : _https://graph.microsoft.com/v1.0/users/{userPrincipalName}/calendar/events/{idEvent}_
+    - - Link [document](https://docs.microsoft.com/en-us/graph/api/resources/calendar?view=graph-rest-1.0) 
+
+2. **ADD Events , Calendars and Calendar_Groups**
+    - method: `POST`
+    - headers: `{Content-Type :	application/json ,Authorization : Bearer ${accessTokenAzure} }`
+
+**Add Event**
+```
 const data = {
-    client_id: azureIdAzure,
-    scope: scopeAzure,
-    code: code,
-    redirect_uri: redirectUrlAzure,
-    grant_type: "authorization_code",
-    client_secret: secretAzure,
-    response_mode: "form_post"
-};
-```
-Sau khi gửi form-data thành công thì ta nhận được Access Token và một số thông tin nằm trong data gửi về.
-
-**Bước 4.** Có được Access token ta thực hiện gọi đến Microsoft Graph bằng accessToken Bằng cách
-```
-method: GET.
-Authorization : `Bearer ${accessTokenAzure}`,
-URL https://graph.microsoft.com/v1.0/me/
-```
-
-**Ngoài ra còn một số url sau:**
-		`	url: "https://graph.microsoft.com/v1.0/me/events"`  
-     _get all events_
-			`url: "https://graph.microsoft.com/v1.0/me/calendars"`,  
-      _get all calendar_
-			`url: "https://graph.microsoft.com/v1.0/users/outlook_27553438A307B184@outlook.com/calendars"` 
-      _get all calendar by users_
-			`url: https://graph.microsoft.com/v1.0/me/calendars/${idCalendar}` 
-      _get calendar by id_
-			`url: https://graph.microsoft.com/v1.0/me/events/${idEvent}`  _get event by id_
-			`url: https://graph.microsoft.com/v1.0/me/calendars/${idCalendar}/events`,  
-      _get events from calendarID_
-			`url: https://graph.microsoft.com/v1.0/users/${userPrincipalName}/calendar` _userPrincipalName nhan lich chia se tu Account dang nhap_
-			`url: https://graph.microsoft.com/v1.0/users/${userPrincipalName}/calendar/events/${idEvent}` 
-      _userPrincipalName get event by eventID_
-			`url: https://graph.microsoft.com/v1.0/users/${userPrincipalName}/calendar/events`  
-      _userPrincipalName get all events_
-- https://graph.microsoft.com/v1.0/me/calendarGroups 
-Method: `POST` _thì sẽ tạo ra group calendars_ với data={"name":"Calendar group name"}
-```
-// [
-//     {
-//       id: 'AQMkADAwATM3ZmYAZS0wMmIxLTczMwA3LTAwAi0wMAoARgAAA6ff2qnCPwlNlq5XDoFJyvI7BGju758rMnI5gAAAIBBgAAAEYg0JrBN7BGju75=rMnI5gAAAIgqQA',
-//       name: 'My Calendars',
-//       classId: '0006f0b7-0000-0000',
-//       changeKey: 'RiDQmsE3sEaO7vnysycjmAAAAAAm'
-//     },
-//     {
-//       id: 'AQMkADAwATM3ZmYAZS0wMmIxLTczMwA3LTAwAi0wMAoARgAAA6ff2qnCPwlNlq5XDoFJBN7BGju758rMnI5gAAAIBBgAAAEYg0JrBN=ju758rMnI5gAAAIgqwA',
-//       name: 'Other Calendars',
-//       classId: '0006f0b8-0000',
-//       changeKey: 'RiDQmsE3sEaO7vnysycjmAAAAAA'
-//     },]
-```
-- https://graph.microsoft.com/v1.0/me/calendars thực hiện tạo calendars ,phương thức POST 
-data = {"name": "Calendar name" }
-```
-// [
-//     {
-//       id: 'AQMkADAwATM3ZmYAZS0wMmIxLTczMwA3LTAwAi0wMAoARgAAA6ff2qnCPwlNlq5XDoFJyvI7BGju758rMnI5gAAAIBBgAAAEYg0JrBN7BGju75=rMnI5gAAAIgqQA',
-//       name: 'My Calendars',
-//       classId: '0006f0b7-0000-0000',
-//       changeKey: 'RiDQmsE3sEaO7vnysycjmAAAAAAm'
-//     },
-//     {
-//       id: 'AQMkADAwATM3ZmYAZS0wMmIxLTczMwA3LTAwAi0wMAoARgAAA6ff2qnCPwlNlq5XDoFJBN7BGju758rMnI5gAAAIBBgAAAEYg0JrBN=ju758rMnI5gAAAIgqwA',
-//       name: 'Other Calendars',
-//       classId: '0006f0b8-0000',
-//       changeKey: 'RiDQmsE3sEaO7vnysycjmAAAAAA'
-//     },]
-```
-- https://graph.microsoft.com/v1.0/me/events thực hiện tạo sự kiện hẹn lịch ,phương thức POST 
-```
-// data post
-const data = {
-    "subject": "My birthday ",
+    "subject": "Christmas dinner1111",
     "body": {
         "contentType": "HTML",
-        "content": "what are you doing ?"
+        "content": "Happy holidays!"
     },
     "start": {
-        "dateTime": "2021-01-17T15:30:00.0000000",
+        "dateTime": "2021-01-22T15:30:00",
         "timeZone": "Asia/Bangkok"
     },
     "end": {
-        "dateTime": "2021-01-17T16:00:00.0000000",
+        "dateTime": "2021-01-22T16:00:00",
         "timeZone": "Asia/Bangkok"
     },
     "location": {
@@ -142,55 +131,229 @@ const data = {
     "attendees": [
         {
             "emailAddress": {
-                "address": "xdatgd3@gmail.com",
-                "name": "Nguyen Van Dat"
+                "address": "outlook_D814847BC8D772FA@outlook.com",  // nguoi nhan
+                "name": "Nguyễn Đạt"
             },
             "type": "required"
         }
     ],
     "allowNewTimeProposals": true,
 }
+const options2 = {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${accessTokenAzure}` },
+    data: JSON.stringify(data),
+    url: "https://graph.microsoft.com/v1.0/me/events",
+};
 ```
+- POST /me/calendar/events
+- POST /me/calendars/{id}/events
+
+**Add Calendar:**
 ```
-// Return
-  start: { dateTime: '2021-01-17T15:30:00.0000000', timeZone: 'Asia/Bangkok' },
-  end: { dateTime: '2021-01-17T16:00:00.0000000', timeZone: 'Asia/Bangkok' },
-  location: {
-    displayName: "Harry's Bar",
-    locationType: 'default',
-    uniqueId: "Harry's Bar",
-    uniqueIdType: 'private'
-  },
-  locations: [
-    {
-      displayName: "Harry's Bar",
-      locationType: 'default',
-      uniqueId: "Harry's Bar",
-      uniqueIdType: 'private'
-    }
-  ],
-  attendees: [ { type: 'required', status: [Object], emailAddress: [Object] } ],
-  organizer: {
-    emailAddress: {
-      name: 'Nguyễn Đạt',
-      address: 'outlook_27553438A307B184@outlook.com'
-    }
-  }
+const data = {
+    "name": "Create calendar name"
 }
+const options2 = {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${accessTokenAzure}` },
+    data: JSON.stringify(data),
+    url: "https://graph.microsoft.com/v1.0/me/calendars",
+};
 ```
-
-**Notification**
+- POST /users/{id | userPrincipalName}/calendars
+  
+**Add Calendar Groups:**
 ```
-POST https://graph.microsoft.com/v1.0/subscriptions
-Content-type: application/json
-
-{
-   "changeType": "created",
-   "notificationUrl": "https://webhook.azurewebsites.net/api/send/myNotifyClient",
-   "resource": "me/mailFolders('Inbox')/messages",
-   "expirationDateTime":"2016-11-20T18:23:45.9356913Z",
-   "clientState": "secretClientValue",
-   "latestSupportedTlsVersion": "v1_2"
+const data = {
+    "name": "Calendar Group name"
 }
+const options2 = {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${accessTokenAzure}` },
+    data: JSON.stringify(data),
+    url: "https://graph.microsoft.com/v1.0/me/calendarGroups",
+};
 ```
+- POST /users/{id | userPrincipalName}/calendarGroups
 
+3. **Edit Events , Calendars and Calendar_Groups**
+    - method: `PATCH`
+    - headers: `{ Authorization : Bearer ${accessTokenAzure} }`
+
+**Edit Event**
+```
+const eventID = "AQMkADAwATM3ZmYAZS0wMm...";
+const data = {
+    "locations": [
+        {
+            "displayName": "New displayName "
+        }
+    ]
+}
+const options2 = {
+    method: 'PATCH',
+    headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${accessTokenAzure}` },
+    data: JSON.stringify(data),
+    url: `https://graph.microsoft.com/v1.0/me/events/${eventID}`
+```
+PATCH /me/groups/{id}/events/{id}
+PATCH /me/calendar/events/{id}
+PATCH /me/groups/{id}/calendar/events/{id}
+PATCH /me/calendars/{id}/events/{id}
+PATCH /me/calendargroup/calendars/{id}/events/{id}
+PATCH /me/calendargroups/{id}/calendars/{id}/events/{id}
+
+**Edit Calendar**
+```
+const data = {
+    "name": "Edit calendar name"
+}
+const options2 = {
+    method: 'PATCH',
+    headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${accessTokenAzure}` },
+    data: JSON.stringify(data),
+    url: "https://graph.microsoft.com/v1.0/me/calendars/{id}"
+};
+```
+PATCH /me/calendarGroup/calendars/{id}
+PATCH /me/calendarGroups/{id}/calendars/{id}
+
+**Edit Calendar Group**
+```
+const groupID = "AQMkADAwATM3ZmYAZS0wMmIx...";
+const data = {
+    "name": "Edit group"
+}
+const options2 = {
+    method: 'PATCH',
+    headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${accessTokenAzure}` },
+    data: JSON.stringify(data),
+    url: `https://graph.microsoft.com/v1.0/me/calendarGroups/${groupID}`,
+};
+```
+PATCH /me/calendarGroups/{id}
+PATCH /users/{id | userPrincipalName}/calendarGroups/{id}
+
+
+4. **Delete Events , Calendars and Calendar_Groups**
+    - method: `DELETE`
+    - headers: `{ Authorization : Bearer ${accessTokenAzure} }`
+
+**Delete Events**
+```
+const eventID = "AQMkADAwATM3ZmYAZS0...";
+const options2 = {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${accessTokenAzure}` },
+    data: JSON.stringify(data),
+    url: "https://graph.microsoft.com/v1.0/me/events/${eventsID}",
+};
+```
+DELETE /me/events/{id}
+DELETE /groups/{id}/events/{id}
+DELETE /me/calendar/events/{id}
+DELETE /groups/{id}/calendar/events/{id}/
+DELETE /me/calendars/{id}/events/{id}
+DELETE /me/calendargroup/calendars/{id}/events/{id}
+DELETE /me/calendargroups/{id}/calendars/{id}/events/{id}
+
+**Delete Calendar**
+```
+const calendarID = "AQMkADAwATM3ZmYAZS0w..."
+const options2 = {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${accessTokenAzure}` },
+    data: JSON.stringify(data),
+    url: "https://graph.microsoft.com/v1.0/me/calendars/${calendarID}"
+};
+```
+DELETE /me/calendars/{id}
+DELETE /me/calendarGroup/calendars/{id}
+
+**Delete Calendar Group**
+```
+const groupID = "AQMkADAwATM3ZmYAZS0...";
+const options2 = {
+    method: 'DELETE',
+    headers: { 'Authorization': `Bearer ${accessTokenAzure}` },
+    data: JSON.stringify(data),
+    url: `https://graph.microsoft.com/v1.0/me/calendarGroups/${groupID}`,
+};
+```
+DELETE /me/calendarGroups/{id}
+DELETE /users/{id | userPrincipalName}/calendarGroups/{id}
+
+
+4. **Notification Calendars**
+
+**List subscriptions**
+- method: `GET`
+- headers: `{ Authorization : Bearer ${accessTokenAzure} }`
+- url : https://graph.microsoft.com/v1.0/subscriptions
+  
+```
+const options = {
+    method: 'GET',
+    headers: { 'Authorization': `Bearer ${accessTokenAzure}` },
+    url: `https://graph.microsoft.com/v1.0/subscriptions`
+};
+```
+**Create subscriptions**
+- method: `POST`
+- headers: `{ Authorization : Bearer ${accessTokenAzure} }`
+- url : https://graph.microsoft.com/v1.0/subscriptions
+- **Create notificationUrl**
+
+*a.* _Steps Configuring the Azure Event Hub_ :
+1. _Open a browser to the Azure Portal._
+2. _Select **Create a resource**._
+3. _Type **Event Hubs** in the search bar._
+4. _Select the **Event Hubs** suggestion. The Event Hubs creation 4. page will load._
+5. _On the Event Hubs creation page, click **Create**._
+6. _Fill in the Event Hubs namespace creation details, and then click **Create**._
+7. _When the Event Hub namespace is provisioned, go to the page for the namespace._
+8. _Click **Event Hubs** and + **Event Hub**._
+9. _Give a name to the new Event Hub, and click **Create**._
+10. _After the Event Hub has been created, click the name of the Event Hub, and then click **Shared access policies** and + Add to add a new policy._
+11. _Give a name to the policy, check **Send**, and click **Create**._
+12. _After the policy has been created, click the name of the policy to open the details panel, and then copy the **Connection string-primary key** value. Write it down; you'll need it for the next step._
+    
+
+*b.* _Steps Configuring the Azure Key Vault_ :
+1. _Open a browser to the Azure Portal._
+1. _Select **Create a resource**._
+1. _Type **Key Vault** in the search bar._
+1. _Select the **Key Vault** suggestion. The Key Vault creation page will load._
+1. _On the Key Vault creation page, click **Create**._
+1. _Fill in the Key Vault creation details, and then click **Review + Create** and **Create**._
+1. _Go to the newly crated key vault using the **Go to resource** from the notification._
+1. _Copy the **DNS name**, you will need it for the next step._
+1. _Go to **Secrets** and click + **Generate/Import.**_
+1. _Give a name to the secret, and keep the name for later; you will need it for the next step. For the value, paste in the connection string you generated at the Event Hubs step. Click **Create**._
+1. _Click **Access Policies** and + **Add Access Policy**._
+1. _For **Secret permissions**, select Get, and for **Select Principal**, select **Microsoft Graph Change Tracking**. Click **Add**._
+
+*c.* _Steps Configuring the Azure Key Vault_ :
+* **notificationUrl**: https://`<azurekeyvaultname>`.vault.azure.net/secrets/`<secretname>`?tenantId=`<domainname>`
+
+  `azurekeyvaultname` - The name you gave to the key vault when you created it. Can be found in the DNS name.
+  `secretname` - The name you gave to the secret when you created it. Can be found on the Azure Key Vault Secrets page.
+  `domainname` - The name of your tenant; for example, consto.onmicrosoft.com or contoso.com.
+
+**Code example**
+```
+const data = {
+    "changeType": "created,updated,deleted",
+    "notificationUrl": "https://keyvaultoutlookcalendar.vault.azure.net/secrets/nrx2?tenantId=xdatgdgmail.onmicrosoft.com",
+    "resource": "/me/events",
+    "expirationDateTime": "2022-09-19T20:00:00",
+    "clientState": clientState
+}
+const options = {
+    method: 'POST',
+    headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${accessTokenAzure}` },
+    data: JSON.stringify(data),
+    url: "https://graph.microsoft.com/beta/subscriptions",
+};
+```
