@@ -197,12 +197,12 @@ const options2 = {
     data: JSON.stringify(data),
     url: `https://graph.microsoft.com/v1.0/me/events/${eventID}`
 ```
-PATCH /me/groups/{id}/events/{id}
-PATCH /me/calendar/events/{id}
-PATCH /me/groups/{id}/calendar/events/{id}
-PATCH /me/calendars/{id}/events/{id}
-PATCH /me/calendargroup/calendars/{id}/events/{id}
-PATCH /me/calendargroups/{id}/calendars/{id}/events/{id}
+- PATCH /me/groups/{id}/events/{id}
+- PATCH /me/calendar/events/{id}
+- PATCH /me/groups/{id}/calendar/events/{id}
+- PATCH /me/calendars/{id}/events/{id}
+- PATCH /me/calendargroup/calendars/{id}/events/{id}
+- PATCH /me/calendargroups/{id}/calendars/{id}/events/{id}
 
 **Edit Calendar**
 ```
@@ -216,8 +216,8 @@ const options2 = {
     url: "https://graph.microsoft.com/v1.0/me/calendars/{id}"
 };
 ```
-PATCH /me/calendarGroup/calendars/{id}
-PATCH /me/calendarGroups/{id}/calendars/{id}
+- PATCH /me/calendarGroup/calendars/{id}
+- PATCH /me/calendarGroups/{id}/calendars/{id}
 
 **Edit Calendar Group**
 ```
@@ -232,8 +232,8 @@ const options2 = {
     url: `https://graph.microsoft.com/v1.0/me/calendarGroups/${groupID}`,
 };
 ```
-PATCH /me/calendarGroups/{id}
-PATCH /users/{id | userPrincipalName}/calendarGroups/{id}
+- PATCH /me/calendarGroups/{id}
+- PATCH /users/{id | userPrincipalName}/calendarGroups/{id}
 
 
 4. **Delete Events , Calendars and Calendar_Groups**
@@ -250,13 +250,13 @@ const options2 = {
     url: "https://graph.microsoft.com/v1.0/me/events/${eventsID}",
 };
 ```
-DELETE /me/events/{id}
-DELETE /groups/{id}/events/{id}
-DELETE /me/calendar/events/{id}
-DELETE /groups/{id}/calendar/events/{id}/
-DELETE /me/calendars/{id}/events/{id}
-DELETE /me/calendargroup/calendars/{id}/events/{id}
-DELETE /me/calendargroups/{id}/calendars/{id}/events/{id}
+- DELETE /me/events/{id}
+- DELETE /groups/{id}/events/{id}
+- DELETE /me/calendar/events/{id}
+- DELETE /groups/{id}/calendar/events/{id}/
+- DELETE /me/calendars/{id}/events/{id}
+- DELETE /me/calendargroup/calendars/{id}/events/{id}
+- DELETE /me/calendargroups/{id}/calendars/{id}/events/{id}
 
 **Delete Calendar**
 ```
@@ -268,8 +268,8 @@ const options2 = {
     url: "https://graph.microsoft.com/v1.0/me/calendars/${calendarID}"
 };
 ```
-DELETE /me/calendars/{id}
-DELETE /me/calendarGroup/calendars/{id}
+- DELETE /me/calendars/{id}
+- DELETE /me/calendarGroup/calendars/{id}
 
 **Delete Calendar Group**
 ```
@@ -281,8 +281,8 @@ const options2 = {
     url: `https://graph.microsoft.com/v1.0/me/calendarGroups/${groupID}`,
 };
 ```
-DELETE /me/calendarGroups/{id}
-DELETE /users/{id | userPrincipalName}/calendarGroups/{id}
+- DELETE /me/calendarGroups/{id}
+- DELETE /users/{id | userPrincipalName}/calendarGroups/{id}
 
 
 4. **Notification Calendars**
