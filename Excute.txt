@@ -1,0 +1,243 @@
+/* ********************list GET****************** */
+const options1 = {
+    method: 'GET',
+    headers: { 'Authorization': `Bearer ${accessTokenAzure}` },
+    // url: "https://graph.microsoft.com/v1.0/me/calendarGroups",
+    // url: "https://graph.microsoft.com/v1.0/me/events",  //get all events
+    // url: "https://graph.microsoft.com/v1.0/me/calendars",  //get all calendar
+    // url: "https://graph.microsoft.com/v1.0/users/outlook_27553438A307B184@outlook.com/calendars",  // get all calendar by users owne
+    // url: `https://graph.microsoft.com/v1.0/me/calendars/${idCalendar}`,  //get calendar by id
+    // url: `https://graph.microsoft.com/v1.0/me/events/${idEvent}`,  //get event by id
+    // url: `https://graph.microsoft.com/v1.0/me/calendars/${idCalendar}/events`,  //get events from calendarID
+    // url: `https://graph.microsoft.com/v1.0/users/${userPrincipalName}/calendar`,  /* xdatgd3 nhan lich chia se tu xdatgd */
+    // url: `https://graph.microsoft.com/v1.0/users/${userPrincipalName}/calendar/events/${idEvent}`,  /* xdatgd3 Nhận sự kiện trong lịch theo eventID xdatgd */
+    url: `https://graph.microsoft.com/v1.0/users/${userPrincipalName}/calendar/events`,  /* xdatgd3 nhan lich chia se tu xdatgd */
+};
+
+************************************EVENTS*****************************************
+
+/* ******************Add Event******************** */
+const data = {
+    "subject": "Christmas dinner1111",
+    "body": {
+        "contentType": "HTML",
+        "content": "Happy holidays!"
+    },
+    "start": {
+        "dateTime": "2021-01-22T15:30:00",
+        "timeZone": "Asia/Bangkok"
+    },
+    "end": {
+        "dateTime": "2021-01-22T16:00:00",
+        "timeZone": "Asia/Bangkok"
+    },
+    "location": {
+        "displayName": "Harry's Bar"
+    },
+    "attendees": [
+        {
+            "emailAddress": {
+                "address": "outlook_D814847BC8D772FA@outlook.com",  // nguoi nhan
+                "name": "Nguyễn Đạt"
+            },
+            "type": "required"
+        }
+    ],
+    "allowNewTimeProposals": true,
+}
+const options2 = {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${accessTokenAzure}` },
+    data: JSON.stringify(data),
+    url: "https://graph.microsoft.com/v1.0/me/events",
+};
+
+/* ******************Edit Event******************** */
+const eventID = "AQMkADAwATM3ZmYAZS0wMmIxLTczMwA3LTAwAi0wMAoARgAAA6ff2qnCPwlNlq5XDoFJyvIHAEYg0JrBN7BGju758rMnI5gAAAIBDQAAAEYg0JrBN7BGju758rMnI5gAA-q1JGMAAAA=";
+const data = {
+    "locations": [
+        {
+            "displayName": "ABC home"
+        }
+    ]
+}
+const options2 = {
+    method: 'PATCH',
+    headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${accessTokenAzure}` },
+    data: JSON.stringify(data),
+    url: `https://graph.microsoft.com/v1.0/me/events/${eventID}`,
+    
+    /* PATCH /me/events/{id}
+    PATCH /me/groups/{id}/events/{id}
+    PATCH /me/calendar/events/{id}
+    PATCH /me/groups/{id}/calendar/events/{id}
+    PATCH /me/calendars/{id}/events/{id}
+    PATCH /me/calendargroup/calendars/{id}/events/{id}
+    PATCH /me/calendargroups/{id}/calendars/{id}/events/{id}
+    */
+};
+/* ******************Delete Event******************** */
+
+const options2 = {
+    method: 'DELETE',
+    headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${accessTokenAzure}` },
+    data: JSON.stringify(data),
+    url: "https://graph.microsoft.com/v1.0/me/events/${eventsID}",
+};
+
+DELETE /me/events/{id}
+DELETE /users/{id | userPrincipalName}/events/{id}
+DELETE /groups/{id}/events/{id}
+
+DELETE /me/calendar/events/{id}
+DELETE /users/{id | userPrincipalName}/calendar/events/{id}
+DELETE /groups/{id}/calendar/events/{id}/
+
+DELETE /me/calendars/{id}/events/{id}
+DELETE /users/{id | userPrincipalName}/calendars/{id}/events/{id}
+
+DELETE /me/calendargroup/calendars/{id}/events/{id}
+DELETE /users/{id | userPrincipalName}/calendargroup/calendars/{id}/events/{id}
+
+DELETE /me/calendargroups/{id}/calendars/{id}/events/{id}
+DELETE /users/{id | userPrincipalName}/calendargroups/{id}/calendars/{id}/events/{id}
+
+************************************CALENDARS*****************************************
+
+/* ******************Add calendar******************** */
+const data = {
+    "name": "Create calendar123456"
+}
+const options2 = {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${accessTokenAzure}` },
+    data: JSON.stringify(data),
+    url: "https://graph.microsoft.com/v1.0/me/calendars",
+};
+
+/* ******************Edit calendar******************** */
+const data = {
+    "name": "Edit calendar 7"
+}
+const options2 = {
+    method: 'PATCH',
+    headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${accessTokenAzure}` },
+    data: JSON.stringify(data),
+    url: "https://graph.microsoft.com/v1.0/me/calendars/{id}",
+    // PATCH /me/calendarGroup/calendars/{id}
+    // PATCH /me/calendarGroups/{id}/calendars/{id}
+};
+
+/* ******************Delete calendar******************** */
+const calendarID = "AQMkADAwATM3ZmYAZS0wMmIxLTczMwA3LTAwAi0wMAoARgAAA6ff2qnCPwlNlq5XDoFJyvIHAEYg0JrBN7BGju758rMnI5gAAAIBBgAAAEYg0JrBN7BGju758rMnI5gAA-q1O88AAAA="
+const options2 = {
+    method: 'DELETE',
+    headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${accessTokenAzure}` },
+    data: JSON.stringify(data),
+    url: "https://graph.microsoft.com/v1.0/me/calendars/${calendarID}"
+};
+
+===========================================CALENDAR GROUPS============================================
+
+/* *******************Add Calendar group******************* */
+const data = {
+    "name": "Calendar group test 2"
+}
+const options2 = {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${accessTokenAzure}` },
+    data: JSON.stringify(data),
+    url: "https://graph.microsoft.com/v1.0/me/calendarGroups",
+};
+
+/* *******************Edit Calendar group******************* */
+const groupID = "AQMkADAwATM3ZmYAZS0wMmIxLTczMwA3LTAwAi0wMAoARgAAA6ff2qnCPwlNlq5XDoFJyvIHAEYg0JrBN7BGju758rMnI5gAAAIBBgAAAEYg0JrBN7BGju758rMnI5gAA-q1O8gAAAA=";
+
+const data = {
+    "name": "Edit group"
+}
+const options2 = {
+    method: 'PATCH',
+    headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${accessTokenAzure}` },
+    data: JSON.stringify(data),
+    url: `https://graph.microsoft.com/v1.0/me/calendarGroups/${groupID}`,
+};
+
+/* *******************Delete Calendar group******************* */
+const groupID = "AQMkADAwATM3ZmYAZS0wMmIxLTczMwA3LTAwAi0wMAoARgAAA6ff2qnCPwlNlq5XDoFJyvIHAEYg0JrBN7BGju758rMnI5gAAAIBBgAAAEYg0JrBN7BGju758rMnI5gAA-q1O8gAAAA=";
+
+const data = {
+    "name": "Edit group"
+}
+const options2 = {
+    method: 'DELETE',
+    headers: { 'content-type': 'application/json', 'Authorization': `Bearer ${accessTokenAzure}` },
+    data: JSON.stringify(data),
+    url: `https://graph.microsoft.com/v1.0/me/calendarGroups/${groupID}`,
+};
+
+DELETE /me/calendars/{id}
+DELETE /me/calendarGroup/calendars/{id}
+DELETE /me/calendarGroups/{id}/calendars/{id}
+/* ********************************* NOTIFICATION ******************* *************/
+
+let data3 = {
+    "changeType": "created,updated,deleted",
+    "notificationUrl": "https://keyvaultoutlookcalendar.vault.azure.net/secrets/nrx2?tenantId=xdatgdgmail.onmicrosoft.com",
+    "resource": "/me/events",
+    "expirationDateTime": "2022-09-19T20:00:00",
+    "clientState": "Nguyenvandat1998@"
+}
+const options3 = {
+    method: 'POST',
+    headers: { "Content-Type": "application/json", 'Authorization': `Bearer ${accessTokenAzure}` },
+    data: JSON.stringify(data3),
+    url: "https://graph.microsoft.com/beta/subscriptions",
+};
+
+// ======================= DATA ======================
+		/* /me/... = /users/{address}/.... */
+// xdatgd : outlook_27553438A307B184@outlook.com
+// xdatgd3 : outlook_D814847BC8D772FA@outlook.com
+// userID : 27553438a307b184
+// const idCalendar = "AQMkADAwATM3ZmYAZS0wMmIxLTczMwA3LTAwAi0wMAoARgAAA6ff2qnCPwlNlq5XDoFJyvIHAEYg0JrBN7BGju758rMnI5gAAAIBBgAAAEYg0JrBN7BGju758rMnI5gAAAIgqgAAAA==";
+// const idEvent = "AQMkADAwATM3ZmYAZS0wMmIxLTczMwA3LTAwAi0wMAoARgAAA6ff2qnCPwlNlq5XDoFJyvIHAEYg0JrBN7BGju758rMnI5gAAAIBDQAAAEYg0JrBN7BGju758rMnI5gAA-q1JGEAAAA=";
+// const userPrincipalName = "outlook_D814847BC8D772FA@outlook.com"
+
+// {  Group
+//     id: 'AQMkADAwATM3ZmYAZS0wMmIxLTczMwA3LTAwAi0wMAoARgAAA6ff2qnCPwlNlq5XDoFJyvIHAEYg0JrBN7BGju758rMnI5gAAAIBBgAAAEYg0JrBN7BGju758rMnI5gAAAIgqQAAAA==',
+//     name: 'My Calendars',
+//     classId: '0006f0b7-0000-0000-c000-000000000046',
+//     changeKey: 'RiDQmsE3sEaO7vnysycjmAAAAAAmTA=='
+//   },
+//   {
+//     id: 'AQMkADAwATM3ZmYAZS0wMmIxLTczMwA3LTAwAi0wMAoARgAAA6ff2qnCPwlNlq5XDoFJyvIHAEYg0JrBN7BGju758rMnI5gAAAIBBgAAAEYg0JrBN7BGju758rMnI5gAA-q1O8gAAAA=',
+//     name: 'Calendar Work',
+//     classId: '2482fdf7-71fe-4115-b926-1f6deae548c1',
+//     changeKey: 'RiDQmsE3sEaO7vnysycjmAAD+seX5g=='
+//   },
+
+// { // calendar
+//     id: 'AQMkADAwATM3ZmYAZS0wMmIxLTczMwA3LTAwAi0wMAoARgAAA6ff2qnCPwlNlq5XDoFJyvIHAEYg0JrBN7BGju758rMnI5gAAAIBBgAAAEYg0JrBN7BGju758rMnI5gAA-q1O88AAAA=',
+//     name: 'Create calendar7',
+//     isDefaultCalendar: false,
+//     changeKey: 'RiDQmsE3sEaO7vnysycjmAAD+seigg==',
+//     owner: {
+//       name: 'Nguyễn Đạt',
+//       address: 'outlook_27553438A307B184@outlook.com'
+//     }
+//   }
+
+// {  Events
+//     '@odata.etag': 'W/"RiDQmsE3sEaO7vnysycjmAAD+sejNA=="',
+//     id: 'AQMkADAwATM3ZmYAZS0wMmIxLTczMwA3LTAwAi0wMAoARgAAA6ff2qnCPwlNlq5XDoFJyvIHAEYg0JrBN7BGju758rMnI5gAAAIBDQAAAEYg0JrBN7BGju758rMnI5gAA-q1JFIAAAA=',
+//     createdDateTime: '2021-01-13T18:01:46.0527892Z',
+//     lastModifiedDateTime: '2021-01-13T18:19:02.3432373Z',
+//     changeKey: 'RiDQmsE3sEaO7vnysycjmAAD+sejNA==',
+//     originalStartTimeZone: 'Asia/Bangkok',
+//     originalEndTimeZone: 'Asia/Bangkok',
+//     iCalUId: '040000008200E00074C5B7101A82E00800000000237D3028D6E9D60100000000000000001000000074C22CD50BCD6846803C59470985B5D4',
+//     subject: 'My birthday ',
+//     bodyPreview: 'what are you doing ?',
+//     webLink: 'https://outlook.live.com/owa/?itemid=AQMkADAwATM3ZmYAZS0wMmIxLTczMwA3LTAwAi0wMAoARgAAA6ff2qnCPwlNlq5XDoFJyvIHAEYg0JrBN7BGju758rMnI5gAAAIBDQAAAEYg0JrBN7BGju758rMnI5gAA%2Fq1JFIAAAA%3D&exvsurl=1&path=/calendar/item',
+//   }

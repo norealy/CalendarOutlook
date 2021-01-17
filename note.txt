@@ -1,7 +1,51 @@
+Time 14-1 => het thang 2
+Muc tieu : Hoan thanh 1 du an microservice (ung dung su dung, tai lieu).
+Slack(Ung dung chat), calendar(Chua thong tin nguoi dung)
+
+Từ slack => calendar:
+(Thêm ,sửa ,xóa )
+Calendars mà thêm sửa xóa sẽ có thông báo vê slack.
+
+
+Đẩy dữ liệu từ calendar va slack va từ calendar ve Slack
+
+DIeu xan lam :
+Dieu tra cach thuc sử dụng và lấy tai nguyen cua calendars
+- Thuc hien chinh outlook calendar
+
+Tai lieu lam ra phải có :
+- Cung cấp người ta cách thức để lấy được tài nguyên. 
+
+Kết quả : Tài liệu + demo.
+
+--------------------------Tuần 1 --------------------
+Viết tài liệu:
+outlook calendar: (Thêm ,sửa ,xóa )
+Lắng nghe thay đổi từ outlook calendars
+
+Code demo:
+outlook calendar: (Thêm ,sửa ,xóa )
+Lắng nghe thay đổi từ outlook calendars
+
+KHong ĐƯợc push code lên master.
+
+-----tao branch feature/KEY
+
+tools vẽ biểu đồ luồng github => truy cập plantuml.com
+
+Done code : Code thực hiện chức năng đó. và unit chắc năng đó.
+
+
 --------------Loi ich-----------------
 thiết lập cuộc họp
 quản lý email
 tìm thông tin về danh bạ và những người dùng khác
 trò chuyện
 sắp xếp lịch theo nhóm 
---------------Loi ich-----------------
+
+
+--------------15 phut hop hang ngay-----------------
+-- Da lam duoc gi.?
+-- Vuong mac gi.?
+
+PUSH Noti.

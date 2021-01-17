@@ -1,7 +1,7 @@
 # Outlook calendars tutorials
 Outlook calendar cho phép bạn quản lý email và danh bạ, tìm thông tin về người dùng trong tổ chức, sắp xếp thời gian cho công việc, gia đình và các hoạt động cá nhân.
 
-## Luồng Authentication
+## Cách thực hiện Authentication
 
 *Bước 1. Nhận ủy quyền*
 ![alt](https://github.com/norealy/CalendarOutlook/blob/master/image/picture1.png)
@@ -20,6 +20,20 @@ Outlook calendar cho phép bạn quản lý email và danh bạ, tìm thông tin
 - >Certificates & secrets > New client secret
 2. **Thực hiện authentication**
  Sau khi tạo tài khoản Azure ta cần một số thông tin như sau : `AZURE_SECRET`, `AZURE_ID`, `AZURE_REDIRECT`, `AZURE_STATE`.
+
+- Client yêu cầu đăng nhập vs microsoft. Server thực hiện redirect đến máy chủ ủy quyền của microfsoft.
+```
+const urlRequestAuthor = `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?
+    client_id=${azureIdAzure}&
+    response_type=code&
+    redirect_uri=${AZURE_REDIRECT}&
+    response_mode=query&
+    scope=${scopeAzure}&
+    state=${AZURE_STATE}`;
+return res.status(301).redirect(urlRequestAuthor)
+```
+ Trong đó có 1 số options sau
+ ![]
 
 **Bước 1.** Thực hiện phượng thức GET đến `https://login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=${azureIdAzure}&response_type=code&redirect_uri=${redirectUrlAzure}&response_mode=query&scope=${scopeAzure}&state=${stateAzure}`;
 -  Trong đó 
@@ -51,13 +65,27 @@ Sau khi gửi form-data thành công thì ta nhận được Access Token và m�
 ```
 method: GET.
 Authorization : `Bearer ${accessTokenAzure}`,
-URL https://graph.microsoft.com/v1.0/me
+URL https://graph.microsoft.com/v1.0/me/
 ```
 
-Ngoài ra còn một số url sau:
-
+**Ngoài ra còn một số url sau:**
+		`	url: "https://graph.microsoft.com/v1.0/me/events"`  
+     _get all events_
+			`url: "https://graph.microsoft.com/v1.0/me/calendars"`,  
+      _get all calendar_
+			`url: "https://graph.microsoft.com/v1.0/users/outlook_27553438A307B184@outlook.com/calendars"` 
+      _get all calendar by users_
+			`url: https://graph.microsoft.com/v1.0/me/calendars/${idCalendar}` 
+      _get calendar by id_
+			`url: https://graph.microsoft.com/v1.0/me/events/${idEvent}`  _get event by id_
+			`url: https://graph.microsoft.com/v1.0/me/calendars/${idCalendar}/events`,  
+      _get events from calendarID_
+			`url: https://graph.microsoft.com/v1.0/users/${userPrincipalName}/calendar` _userPrincipalName nhan lich chia se tu Account dang nhap_
+			`url: https://graph.microsoft.com/v1.0/users/${userPrincipalName}/calendar/events/${idEvent}` 
+      _userPrincipalName get event by eventID_
+			`url: https://graph.microsoft.com/v1.0/users/${userPrincipalName}/calendar/events`  
+      _userPrincipalName get all events_
 - https://graph.microsoft.com/v1.0/me/calendarGroups 
-Method: `GET` _thì sẽ get all group calendars_
 Method: `POST` _thì sẽ tạo ra group calendars_ với data={"name":"Calendar group name"}
 ```
 // [
@@ -150,4 +178,19 @@ const data = {
   }
 }
 ```
-~ Continue...
+
+**Notification**
+```
+POST https://graph.microsoft.com/v1.0/subscriptions
+Content-type: application/json
+
+{
+   "changeType": "created",
+   "notificationUrl": "https://webhook.azurewebsites.net/api/send/myNotifyClient",
+   "resource": "me/mailFolders('Inbox')/messages",
+   "expirationDateTime":"2016-11-20T18:23:45.9356913Z",
+   "clientState": "secretClientValue",
+   "latestSupportedTlsVersion": "v1_2"
+}
+```
+
